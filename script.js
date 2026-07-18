@@ -17,13 +17,13 @@ let departure=document.getElementById("departure").value;
 let arrival=document.getElementById("arrival").value;
 let status=document.getElementById("status").value;
 
-if(!flightNo||!source||!destination||!departure||!arrival){
-alert("Fill all fields");
+if(flightNo===""||source===""||destination===""||departure===""||arrival===""){
+alert("Please fill all fields");
 return;
 }
 
-if(flights.some(f=>f.flightNo==flightNo)){
-alert("Flight already exists");
+if(flights.find(f=>f.flightNo==Number(flightNo))){
+alert("Flight number already exists");
 return;
 }
 
@@ -36,25 +36,34 @@ arrival,
 status
 });
 
+resetForm();
+saveData();
+}
+
+function resetForm(){
 document.getElementById("flightNo").value="";
 document.getElementById("source").value="";
 document.getElementById("destination").value="";
 document.getElementById("departure").value="";
 document.getElementById("arrival").value="";
 document.getElementById("status").value="Scheduled";
-
-saveData();
 }
 
-function loadFlights(list=flights){
+function loadFlights(data=flights){
 
 const table=document.getElementById("flightTable");
 
 table.innerHTML="";
 
-list.forEach(f=>{
+if(data.length===0){
+table.innerHTML="<tr><td colspan='7'>No Flights Found</td></tr>";
+updateStats();
+return;
+}
 
-const cls=f.status.toLowerCase();
+data.forEach(f=>{
+
+let cls=f.status.toLowerCase();
 
 table.innerHTML+=`
 <tr>
@@ -71,11 +80,9 @@ table.innerHTML+=`
 </td>
 </tr>
 `;
-
 });
 
 updateStats();
-
 }
 
 function updateStats(){
@@ -91,6 +98,8 @@ flights.filter(f=>f.status==="Cancelled").length;
 document.getElementById("departedFlights").innerText=
 flights.filter(f=>f.status==="Departed").length;
 
+}
+
 function searchFlight(){
 
 let source=document.getElementById("searchSource").value.trim().toLowerCase();
@@ -98,19 +107,26 @@ let source=document.getElementById("searchSource").value.trim().toLowerCase();
 let destination=document.getElementById("searchDestination").value.trim().toLowerCase();
 
 let result=flights.filter(f=>
-
 f.source.toLowerCase().includes(source)&&
 f.destination.toLowerCase().includes(destination)
-
 );
 
 loadFlights(result);
 
 }
 
+function clearSearch(){
+
+document.getElementById("searchSource").value="";
+document.getElementById("searchDestination").value="";
+
+loadFlights();
+
+}
+
 function editFlight(flightNo){
 
-let index=flights.findIndex(f=>f.flightNo==flightNo);
+let index=flights.findIndex(f=>f.flightNo===flightNo);
 
 if(index===-1){
 return;
@@ -138,8 +154,8 @@ if(status===null)return;
 
 flights[index]={
 flightNo:Number(no),
-source,
-destination,
+source:source.trim(),
+destination:destination.trim(),
 departure,
 arrival,
 status
@@ -151,13 +167,13 @@ saveData();
 
 function cancelFlight(flightNo){
 
-let index=flights.findIndex(f=>f.flightNo==flightNo);
+let index=flights.findIndex(f=>f.flightNo===flightNo);
 
 if(index===-1){
 return;
 }
 
-if(confirm("Cancel this flight?")){
+if(confirm("Are you sure you want to cancel this flight?")){
 
 flights[index].status="Cancelled";
 
@@ -169,13 +185,13 @@ saveData();
 
 function deleteFlight(flightNo){
 
-let index=flights.findIndex(f=>f.flightNo==flightNo);
+let index=flights.findIndex(f=>f.flightNo===flightNo);
 
 if(index===-1){
 return;
 }
 
-if(confirm("Delete this flight?")){
+if(confirm("Delete this flight permanently?")){
 
 flights.splice(index,1);
 
@@ -185,30 +201,12 @@ saveData();
 
 }
 
-function resetForm(){
-
-document.getElementById("flightNo").value="";
-document.getElementById("source").value="";
-document.getElementById("destination").value="";
-document.getElementById("departure").value="";
-document.getElementById("arrival").value="";
-document.getElementById("status").value="Scheduled";
-
-}
-
-function clearSearch(){
-
-document.getElementById("searchSource").value="";
-document.getElementById("searchDestination").value="";
-
-loadFlights();
-
-}
-
 window.onload=function(){
 
 if(!localStorage.getItem("flights")){
+
 localStorage.setItem("flights",JSON.stringify(flights));
+
 }
 
 flights=JSON.parse(localStorage.getItem("flights"));
@@ -216,5 +214,3 @@ flights=JSON.parse(localStorage.getItem("flights"));
 loadFlights();
 
 };
-
-}
