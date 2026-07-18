@@ -4,8 +4,6 @@ let flights=JSON.parse(localStorage.getItem("flights"))||[
 {flightNo:103,source:"Chennai",destination:"Kolkata",departure:"14:00",arrival:"16:20",status:"Scheduled"}
 ];
 
-saveData();
-
 function saveData(){
 localStorage.setItem("flights",JSON.stringify(flights));
 loadFlights();
@@ -19,14 +17,12 @@ let departure=document.getElementById("departure").value;
 let arrival=document.getElementById("arrival").value;
 let status=document.getElementById("status").value;
 
-if(flightNo===""||source===""||destination===""||departure===""||arrival===""){
+if(!flightNo||!source||!destination||!departure||!arrival){
 alert("Fill all fields");
 return;
 }
 
-let exists=flights.some(f=>f.flightNo==flightNo);
-
-if(exists){
+if(flights.some(f=>f.flightNo==flightNo)){
 alert("Flight already exists");
 return;
 }
@@ -51,12 +47,14 @@ saveData();
 }
 
 function loadFlights(list=flights){
-let table=document.getElementById("flightTable");
+
+const table=document.getElementById("flightTable");
+
 table.innerHTML="";
 
-list.forEach((f,index)=>{
+list.forEach(f=>{
 
-let cls=f.status.toLowerCase();
+const cls=f.status.toLowerCase();
 
 table.innerHTML+=`
 <tr>
@@ -67,15 +65,17 @@ table.innerHTML+=`
 <td>${f.arrival}</td>
 <td class="${cls}">${f.status}</td>
 <td>
-<button class="action-btn edit" onclick="editFlight(${index})">Edit</button>
-<button class="action-btn cancel" onclick="cancelFlight(${index})">Cancel</button>
-<button class="action-btn delete" onclick="deleteFlight(${index})">Delete</button>
+<button class="action-btn edit" onclick="editFlight(${f.flightNo})">Edit</button>
+<button class="action-btn cancel" onclick="cancelFlight(${f.flightNo})">Cancel</button>
+<button class="action-btn delete" onclick="deleteFlight(${f.flightNo})">Delete</button>
 </td>
 </tr>
 `;
+
 });
 
 updateStats();
+
 }
 
 function updateStats(){
@@ -90,8 +90,6 @@ flights.filter(f=>f.status==="Cancelled").length;
 
 document.getElementById("departedFlights").innerText=
 flights.filter(f=>f.status==="Departed").length;
-
-}
 
 function searchFlight(){
 
@@ -108,12 +106,20 @@ f.destination.toLowerCase().includes(destination)
 
 loadFlights(result);
 
-function editFlight(index){
+}
+
+function editFlight(flightNo){
+
+let index=flights.findIndex(f=>f.flightNo==flightNo);
+
+if(index===-1){
+return;
+}
 
 let f=flights[index];
 
-let flightNo=prompt("Flight Number",f.flightNo);
-if(flightNo===null)return;
+let no=prompt("Flight Number",f.flightNo);
+if(no===null)return;
 
 let source=prompt("Source",f.source);
 if(source===null)return;
@@ -131,7 +137,7 @@ let status=prompt("Status (Scheduled/Delayed/Cancelled/Departed)",f.status);
 if(status===null)return;
 
 flights[index]={
-flightNo:Number(flightNo),
+flightNo:Number(no),
 source,
 destination,
 departure,
@@ -143,7 +149,13 @@ saveData();
 
 }
 
-function cancelFlight(index){
+function cancelFlight(flightNo){
+
+let index=flights.findIndex(f=>f.flightNo==flightNo);
+
+if(index===-1){
+return;
+}
 
 if(confirm("Cancel this flight?")){
 
@@ -155,7 +167,13 @@ saveData();
 
 }
 
-function deleteFlight(index){
+function deleteFlight(flightNo){
+
+let index=flights.findIndex(f=>f.flightNo==flightNo);
+
+if(index===-1){
+return;
+}
 
 if(confirm("Delete this flight?")){
 
@@ -167,9 +185,36 @@ saveData();
 
 }
 
+function resetForm(){
+
+document.getElementById("flightNo").value="";
+document.getElementById("source").value="";
+document.getElementById("destination").value="";
+document.getElementById("departure").value="";
+document.getElementById("arrival").value="";
+document.getElementById("status").value="Scheduled";
+
+}
+
+function clearSearch(){
+
+document.getElementById("searchSource").value="";
+document.getElementById("searchDestination").value="";
+
+loadFlights();
+
+}
+
 window.onload=function(){
+
+if(!localStorage.getItem("flights")){
+localStorage.setItem("flights",JSON.stringify(flights));
+}
+
+flights=JSON.parse(localStorage.getItem("flights"));
 
 loadFlights();
 
 };
+
 }
