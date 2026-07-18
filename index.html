@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Airline Scheduling System</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+<h1>Airline Scheduling System</h1>
+<div class="card">
+<h2>Add Flight</h2>
+<div class="grid">
+  
+<input type="number" id="flightNo" placeholder="Flight Number">
+<input type="text" id="source" placeholder="Source">
+<input type="text" id="destination" placeholder="Destination">
+<input type="time" id="departure">
+<input type="time" id="arrival">
+
+<select id="status">
+<option>Scheduled</option>
+<option>Delayed</option>
+<option>Cancelled</option>
+<option>Departed</option>
+</select>
+
+</div>
+<button onclick="addFlight()">Add Flight</button>
+</div>
+<div class="card">
+<h2>Search Flight</h2>
+<div class="grid">
+<input type="text" id="searchSource" placeholder="Source">
+<input type="text" id="searchDestination" placeholder="Destination">
+</div>
+<div class="buttons">
+<button onclick="searchFlight()">Search</button>
+<button onclick="loadFlights()">Reset</button>
+</div>
+
+</div>
+<div class="stats">
+<div class="box">
+<h3 id="totalFlights">0</h3>
+<p>Total Flights</p>
+</div>
+
+<div class="box">
+<h3 id="scheduledFlights">0</h3>
+<p>Scheduled</p>
+</div>
+
+<div class="box">
+<h3 id="cancelledFlights">0</h3>
+<p>Cancelled</p>
+</div>
+
+<div class="box">
+<h3 id="departedFlights">0</h3>
+<p>Departed</p>
+</div>
+
+</div>
+<div class="card">
+<h2>Flights</h2>
+<table>
+<thead>
+
+<tr>
+<th>Flight No</th>
+<th>Source</th>
+<th>Destination</th>
+<th>Departure</th>
+<th>Arrival</th>
+<th>Status</th>
+<th>Actions</th>
+</tr>
+
+</thead>
+<tbody id="flightTable">
+</tbody>
+
+</table>
+</div>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
